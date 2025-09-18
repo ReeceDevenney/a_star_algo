@@ -77,13 +77,38 @@ def get_array(num):
         {empty_array[2]}\n""")    
     return empty_array
 
-def solve_puzzle():
-    start = get_array(0)
-    goal = get_array(1)
+start = [[0,1,3], [4,2,5], [7,8,6]]
+
+start2 =[[1,2,3], 
+        [4,5,0], 
+        [7,8,6]]
+ 
+goal = [[1,2,3], 
+        [4,5,6], 
+        [7,8,0]]
+def solve_puzzle(start, goal):
+    #start = get_array(0)
+    #goal = get_array(1)
     frontier = []
     expanded = 0
     frontier.append(Node(start, None, 0, calculate_manhattan_hscore(start, goal), None))
     
-    print(frontier[0].hscore)
-
-print(get_array(0))
+    for i in range(100):
+        current_node = frontier.pop(0)
+        print(current_node.state)
+        expanded += 1
+        zero_loc = find_tile(current_node.state, 0)
+        #North
+        if current_node.state[zero_loc[0] - 1][zero_loc[1]]:
+            new_state = current_node.state
+            new_state.state[zero_loc[0]][zero_loc[1]] = new_state.state[zero_loc[0] - 1][zero_loc[1]]
+            new_state.state[zero_loc[0] - 1][zero_loc[1]] = 0
+            
+            new_node = Node(new_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_state, goal), "N")
+            if new_node.hscore == 0:
+                print("solution found")
+        #South
+        #East
+        #West
+    
+solve_puzzle(goal, start2)
