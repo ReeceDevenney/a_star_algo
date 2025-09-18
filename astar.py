@@ -77,15 +77,6 @@ def get_array(num):
         {empty_array[2]}\n""")    
     return empty_array
 
-def add_to_frontier(node, frontier):
-    if len(frontier) == 0:
-        frontier.append(node)
-        return
-    for i in range(len(frontier)):
-        if (node.hscore + node.gscore) <= (frontier[i].hscore + frontier[i].gscore):
-            frontier.insert(i, node)
-            break
-
 start = [[0,1,3], [4,2,5], [7,8,6]]
 
 goal =[[1,2,0], 
@@ -119,18 +110,14 @@ def solve_puzzle(start, goal):
     
     for i in range(100):
         current_node = frontier.pop(0)
-        print(f"""\n
-        {current_node.state[0]}\n
-        {current_node.state[1]}\n
-        {current_node.state[2]}\n""") 
-        print(f"Current Node H Score: {current_node.hscore}")
+        print(current_node.state)
         expanded += 1
         zero_loc = find_tile(current_node.state, 0) #Location of the zero
         #North
         if current_node.state[zero_loc[0] - 1][zero_loc[1]]:
-            new_state = current_node.state          #Grabbing the state of the current node to then transform on it
-            new_state[zero_loc[0]][zero_loc[1]] = new_state[zero_loc[0] - 1][zero_loc[1]] #Node located sent to the zero/empty position
-            new_state[zero_loc[0] - 1][zero_loc[1]] = 0 #Zero location is now at the node position
+            new_state = current_node.state
+            new_state.state[zero_loc[0]][zero_loc[1]] = new_state.state[zero_loc[0] - 1][zero_loc[1]]
+            new_state.state[zero_loc[0] - 1][zero_loc[1]] = 0
             
             new_node = Node(new_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_state, goal), "N")
             
@@ -140,18 +127,6 @@ def solve_puzzle(start, goal):
 
             add_to_frontier(new_node, frontier)
         #South
-        if current_node.state[zero_loc[0] + 1][zero_loc[1]]:
-            new_state = current_node.state          #Grabbing the state of the current node to then transform on it
-            new_state[zero_loc[0]][zero_loc[1]] = new_state[zero_loc[0] + 1][zero_loc[1]] #Node located sent to the zero/empty position
-            new_state[zero_loc[0] + 1][zero_loc[1]] = 0 #Zero location is now at the node position
-            
-            new_node = Node(new_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_state, goal), "S")
-            
-            if new_node.hscore == 0:
-                print_solution(current_node, goal)
-                return
-
-            add_to_frontier(new_node, frontier)
         #East
         #West
     
