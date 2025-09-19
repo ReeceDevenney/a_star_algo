@@ -126,9 +126,9 @@ def print_solution(current_node, goal):
         {goal[2]}\n""")
     print("solution found")
 
-def solve_puzzle(start, goal, h_function):
-    #start = get_array(0)
-    #goal = get_array(1)
+def solve_puzzle(h_function):
+    start = get_array(0)
+    goal = get_array(1)
     #frontier to store all created nodes
     frontier = []
     #counter for how many nodes were expanded
@@ -233,15 +233,15 @@ def solve_puzzle(start, goal, h_function):
                 return
 
             add_to_frontier(new_West_node, frontier)
-start = [[2,0,3],
-         [1,8,4],
-         [7,6,5]]
 
+            # #Used for testing purposes
+            # start = [[2,0,3],
+            #         [1,8,4],
+            #         [7,6,5]]
 
-goal = [[1, 2, 3],
-        [8, 0, 4],
-        [7, 6, 5]]
+            # goal = [[1, 2, 3],
+            #         [8, 0, 4],
+            #         [7, 6, 5]]
 
-
-solve_puzzle(start, goal, calculate_wrong_tiles_hscore)
+solve_puzzle(calculate_wrong_tiles_hscore)
 
