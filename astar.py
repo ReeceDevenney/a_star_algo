@@ -29,6 +29,17 @@ def calculate_manhattan_hscore(state, goal):
                 hscore += abs(k - goal_pos[1])
     return(hscore)
 
+def calculate_wrong_tiles_hscore(state, goal):
+    hscore = 0
+    for i in range(3):
+        for k in range(3):
+            if state[i][k] != 0:
+                goal_pos = find_tile(goal, state[i][k])
+                if goal_pos[0] != i or goal_pos[1] != k:
+                    hscore += 1
+
+    return(hscore)
+
 #build a board from user input    
 def get_array(num):
     empty_array = [[], [], []]
@@ -103,11 +114,11 @@ def solution_path(node):
     solution = f"{node.move}"
     next_node = copy.deepcopy(node.parent)
     while True:
-        print(solution)
-        solution = next_node.move + "->" + solution
-        next_node = copy.deepcopy(next_node.parent)
         if next_node.parent == None:
             return solution
+        solution = next_node.move + "->" + solution
+        next_node = copy.deepcopy(next_node.parent)
+        
 
 def print_solution(current_node, goal):
     print("current node below")
@@ -122,12 +133,12 @@ def print_solution(current_node, goal):
         {goal[2]}\n""")
     print("solution found")
 
-def solve_puzzle(start, goal):
-    #start = get_array(0)
-    #goal = get_array(1)
+def solve_puzzle(h_function):
+    start = get_array(0)
+    goal = get_array(1)
     frontier = []
     expanded = 0
-    frontier.append(Node(start, None, 0, calculate_manhattan_hscore(start, goal), None))
+    frontier.append(Node(start, None, 0, h_function(start, goal), None))
     
     for i in range(100):
         current_node = frontier.pop(0)
@@ -145,7 +156,7 @@ def solve_puzzle(start, goal):
             new_North_state[zero_loc[0]][zero_loc[1]] = new_North_state[zero_loc[0] - 1][zero_loc[1]] #WHAT IS GOING ON WITH POINTERS HERE
             new_North_state[zero_loc[0] - 1][zero_loc[1]] = 0
             
-            new_North_node = Node(new_North_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_North_state, goal), "N")
+            new_North_node = Node(new_North_state, current_node, current_node.gscore + 1, h_function(new_North_state, goal), "N")
             
             if new_North_node.hscore == 0:
                 print_solution(new_North_node, goal)
@@ -161,7 +172,7 @@ def solve_puzzle(start, goal):
             new_South_state[zero_loc[0]][zero_loc[1]] = new_South_state[zero_loc[0] + 1][zero_loc[1]]
             new_South_state[zero_loc[0] + 1][zero_loc[1]] = 0
             
-            new_South_node = Node(new_South_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_South_state, goal), "S")
+            new_South_node = Node(new_South_state, current_node, current_node.gscore + 1, h_function(new_South_state, goal), "S")
             
             if new_South_node.hscore == 0:
                 print_solution(new_South_node, goal)
@@ -177,7 +188,7 @@ def solve_puzzle(start, goal):
             new_East_state[zero_loc[0]][zero_loc[1]] = new_East_state[zero_loc[0]][zero_loc[1] + 1]
             new_East_state[zero_loc[0]][zero_loc[1] + 1] = 0
             
-            new_East_node = Node(new_East_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_East_state, goal), "E")
+            new_East_node = Node(new_East_state, current_node, current_node.gscore + 1, h_function(new_East_state, goal), "E")
             
             if new_East_node.hscore == 0:
                 print_solution(new_East_node, goal)
@@ -193,7 +204,7 @@ def solve_puzzle(start, goal):
             new_West_state[zero_loc[0]][zero_loc[1]] = new_West_state[zero_loc[0]][zero_loc[1] - 1]
             new_West_state[zero_loc[0]][zero_loc[1] - 1] = 0
             
-            new_West_node = Node(new_West_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_West_state, goal), "W")
+            new_West_node = Node(new_West_state, current_node, current_node.gscore + 1, h_function(new_West_state, goal), "W")
             
             if new_West_node.hscore == 0:
                 print_solution(new_West_node, goal)
@@ -204,4 +215,4 @@ def solve_puzzle(start, goal):
 
             add_to_frontier(new_West_node, frontier)
     
-solve_puzzle(start, goal)
+solve_puzzle(calculate_wrong_tiles_hscore)
