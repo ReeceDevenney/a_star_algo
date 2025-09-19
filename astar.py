@@ -9,7 +9,6 @@ class Node:
         #the direction the 0 moved in the parent state to produce this state
         self.move = move
 
-
 #finds the x y coordinate of a specific valued tile
 def find_tile(state, value):
     for i in range(3):
@@ -29,6 +28,7 @@ def calculate_manhattan_hscore(state, goal):
                 hscore += abs(k - goal_pos[1])
     return(hscore)
 
+#calculates hscore +1 for each tile that is not in the solution position
 def calculate_wrong_tiles_hscore(state, goal):
     hscore = 0
     for i in range(3):
@@ -37,7 +37,6 @@ def calculate_wrong_tiles_hscore(state, goal):
                 goal_pos = find_tile(goal, state[i][k])
                 if goal_pos[0] != i or goal_pos[1] != k:
                     hscore += 1
-
     return(hscore)
 
 #build a board from user input    
@@ -100,16 +99,7 @@ def add_to_frontier(node, frontier):
             frontier.insert(i, node)
             break
 
-start = [[0,1,3], [4,2,5], [7,8,6]]
-
-start2 =[[1,2,0], 
-        [4,5,3], 
-        [7,8,6]]
- 
-goal = [[1,2,3], 
-        [4,5,6], 
-        [7,8,0]]
-
+# walk back up the tree to construct the work path
 def solution_path(node):
     solution = f"{node.move}"
     next_node = copy.deepcopy(node.parent)
@@ -119,7 +109,7 @@ def solution_path(node):
         solution = next_node.move + "->" + solution
         next_node = copy.deepcopy(next_node.parent)
         
-
+#function to print out solution information
 def print_solution(current_node, goal):
     print("current node below")
     print(f"""
@@ -136,7 +126,9 @@ def print_solution(current_node, goal):
 def solve_puzzle(h_function):
     start = get_array(0)
     goal = get_array(1)
+    #frontier to store all created nodes
     frontier = []
+    #counter for how many nodes were expanded
     expanded = 0
     frontier.append(Node(start, None, 0, h_function(start, goal), None))
     
@@ -149,9 +141,8 @@ def solve_puzzle(h_function):
         print(f"H Value: {current_node.hscore}")
         expanded += 1
         zero_loc = find_tile(current_node.state, 0)
-        #North
+        #Logic to see if 0 can be moved north
         if zero_loc[0] - 1 != -1:
-            # new_North_state = current_node.state
             new_North_state = copy.deepcopy(current_node.state)
             new_North_state[zero_loc[0]][zero_loc[1]] = new_North_state[zero_loc[0] - 1][zero_loc[1]] #WHAT IS GOING ON WITH POINTERS HERE
             new_North_state[zero_loc[0] - 1][zero_loc[1]] = 0
@@ -166,7 +157,7 @@ def solve_puzzle(h_function):
                 return
 
             add_to_frontier(new_North_node, frontier)
-        #South
+        #Logic to see if 0 can be moved south
         if zero_loc[0] + 1 != 3:
             new_South_state = copy.deepcopy(current_node.state)
             new_South_state[zero_loc[0]][zero_loc[1]] = new_South_state[zero_loc[0] + 1][zero_loc[1]]
@@ -182,7 +173,7 @@ def solve_puzzle(h_function):
                 return
 
             add_to_frontier(new_South_node, frontier)
-        #East
+        #Logic to see if 0 can be moved east
         if zero_loc[1] + 1 != 3:
             new_East_state = copy.deepcopy(current_node.state)
             new_East_state[zero_loc[0]][zero_loc[1]] = new_East_state[zero_loc[0]][zero_loc[1] + 1]
@@ -198,7 +189,7 @@ def solve_puzzle(h_function):
                 return
 
             add_to_frontier(new_East_node, frontier)
-        #West
+        #Logic to see if 0 can be moved west
         if zero_loc[1] - 1 != -1:
             new_West_state = copy.deepcopy(current_node.state)
             new_West_state[zero_loc[0]][zero_loc[1]] = new_West_state[zero_loc[0]][zero_loc[1] - 1]
