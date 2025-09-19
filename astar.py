@@ -141,13 +141,16 @@ def solve_puzzle(start, goal, h_function):
                 return
 
     
-    for i in range(100):
+    for i in range(100000):
+        if i == 99999:
+            print("no solution found")
+            return 0
         current_node = frontier.pop(0)
         print(f"""\n
         {current_node.state[0]}\n
         {current_node.state[1]}\n
         {current_node.state[2]}\n""") 
-        print(f"H Value: {current_node.hscore}")
+        print(f"F Value: {current_node.hscore + current_node.gscore}")
         expanded += 1
         zero_loc = find_tile(current_node.state, 0)
         #Logic to see if 0 can be moved north
@@ -156,7 +159,7 @@ def solve_puzzle(start, goal, h_function):
             new_North_state[zero_loc[0]][zero_loc[1]] = new_North_state[zero_loc[0] - 1][zero_loc[1]] #WHAT IS GOING ON WITH POINTERS HERE
             new_North_state[zero_loc[0] - 1][zero_loc[1]] = 0
             
-            new_North_node = Node(new_North_state, current_node, current_node.gscore + 1, h_function(new_North_state, goal), "N")
+            new_North_node = Node(new_North_state, current_node, copy.deepcopy(current_node.gscore) + 1, h_function(new_North_state, goal), "N")
             
             if new_North_node.hscore == 0:
                 print_solution(new_North_node, goal)
@@ -172,7 +175,7 @@ def solve_puzzle(start, goal, h_function):
             new_South_state[zero_loc[0]][zero_loc[1]] = new_South_state[zero_loc[0] + 1][zero_loc[1]]
             new_South_state[zero_loc[0] + 1][zero_loc[1]] = 0
             
-            new_South_node = Node(new_South_state, current_node, current_node.gscore + 1, h_function(new_South_state, goal), "S")
+            new_South_node = Node(new_South_state, current_node, copy.deepcopy(current_node.gscore) + 1, h_function(new_South_state, goal), "S")
             
             if new_South_node.hscore == 0:
                 print_solution(new_South_node, goal)
@@ -188,7 +191,7 @@ def solve_puzzle(start, goal, h_function):
             new_East_state[zero_loc[0]][zero_loc[1]] = new_East_state[zero_loc[0]][zero_loc[1] + 1]
             new_East_state[zero_loc[0]][zero_loc[1] + 1] = 0
             
-            new_East_node = Node(new_East_state, current_node, current_node.gscore + 1, h_function(new_East_state, goal), "E")
+            new_East_node = Node(new_East_state, current_node, copy.deepcopy(current_node.gscore) + 1, h_function(new_East_state, goal), "E")
             
             if new_East_node.hscore == 0:
                 print_solution(new_East_node, goal)
@@ -204,7 +207,7 @@ def solve_puzzle(start, goal, h_function):
             new_West_state[zero_loc[0]][zero_loc[1]] = new_West_state[zero_loc[0]][zero_loc[1] - 1]
             new_West_state[zero_loc[0]][zero_loc[1] - 1] = 0
             
-            new_West_node = Node(new_West_state, current_node, current_node.gscore + 1, h_function(new_West_state, goal), "W")
+            new_West_node = Node(new_West_state, current_node, copy.deepcopy(current_node.gscore) + 1, h_function(new_West_state, goal), "W")
             
             if new_West_node.hscore == 0:
                 print_solution(new_West_node, goal)
@@ -216,10 +219,10 @@ def solve_puzzle(start, goal, h_function):
             add_to_frontier(new_West_node, frontier)
 start =[[1,2,3], 
         [4,5,6], 
-        [7,8,0]]
+        [8,7,0]]
 
 goal = [[1,2,3], 
         [4,5,6], 
         [7,8,0]]
 
-solve_puzzle(start, goal, calculate_wrong_tiles_hscore)
+solve_puzzle(start, goal, calculate_manhattan_hscore)
