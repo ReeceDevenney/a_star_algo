@@ -97,7 +97,8 @@ def add_to_frontier(node, frontier):
     for i in range(len(frontier)):
         if (node.hscore + node.gscore) <= (frontier[i].hscore + frontier[i].gscore):
             frontier.insert(i, node)
-            break
+            return
+    frontier.append(node)
 
 # walk back up the tree to construct the work path
 def solution_path(node):
