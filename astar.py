@@ -99,6 +99,15 @@ goal = [[1,2,3],
         [4,5,6], 
         [7,8,0]]
 
+def solution_path(node):
+    solution = f"{node.move}"
+    next_node = copy.deepcopy(node.parent)
+    while True:
+        print(solution)
+        solution = next_node.move + "->" + solution
+        next_node = copy.deepcopy(next_node.parent)
+        if next_node.parent == None:
+            return solution
 
 def print_solution(current_node, goal):
     print("current node below")
@@ -140,6 +149,9 @@ def solve_puzzle(start, goal):
             
             if new_North_node.hscore == 0:
                 print_solution(new_North_node, goal)
+                print(f"expanded: {expanded}")
+                print(f"total nodes: {expanded + len(frontier)}")
+                print(solution_path(new_North_node))
                 return
 
             add_to_frontier(new_North_node, frontier)
@@ -153,6 +165,9 @@ def solve_puzzle(start, goal):
             
             if new_South_node.hscore == 0:
                 print_solution(new_South_node, goal)
+                print(f"expanded: {expanded}")
+                print(f"total nodes: {expanded + len(frontier)}")
+                print(solution_path(new_South_node))
                 return
 
             add_to_frontier(new_South_node, frontier)
@@ -166,6 +181,9 @@ def solve_puzzle(start, goal):
             
             if new_East_node.hscore == 0:
                 print_solution(new_East_node, goal)
+                print(f"expanded: {expanded}")
+                print(f"total nodes: {expanded + len(frontier)}")
+                print(solution_path(new_East_node))
                 return
 
             add_to_frontier(new_East_node, frontier)
@@ -179,6 +197,9 @@ def solve_puzzle(start, goal):
             
             if new_West_node.hscore == 0:
                 print_solution(new_West_node, goal)
+                print(f"expanded: {expanded}")
+                print(f"total nodes: {expanded + len(frontier)}")
+                print(solution_path(new_West_node))
                 return
 
             add_to_frontier(new_West_node, frontier)
