@@ -1,11 +1,14 @@
+import copy
+
 class Node:
     def __init__(self, state, parent, gscore, hscore, move):
-        self.state = state
-        self.parent = parent
-        self.gscore = gscore
-        self.hscore = hscore
+        self.state = state #The Board
+        self.parent = parent #Parent Node
+        self.gscore = gscore #Integer representing G Score
+        self.hscore = hscore #Integer Representing H Score
         #the direction the 0 moved in the parent state to produce this state
         self.move = move
+
 
 #finds the x y coordinate of a specific valued tile
 def find_tile(state, value):
@@ -80,6 +83,7 @@ def get_array(num):
 def add_to_frontier(node, frontier):
     if len(frontier) == 0:
         frontier.append(node)
+        return
     for i in range(len(frontier)):
         if (node.hscore + node.gscore) <= (frontier[i].hscore + frontier[i].gscore):
             frontier.insert(i, node)
@@ -87,18 +91,18 @@ def add_to_frontier(node, frontier):
 
 start = [[0,1,3], [4,2,5], [7,8,6]]
 
-goal =[[1,2,0], 
+start2 =[[1,2,0], 
         [4,5,3], 
         [7,8,6]]
  
-start2 = [[1,2,3], 
+goal = [[1,2,3], 
         [4,5,6], 
         [7,8,0]]
 
 
 def print_solution(current_node, goal):
-    print("current node")
-    print(f"""\n
+    print("current node below")
+    print(f"""
     {current_node.state[0]}\n
     {current_node.state[1]}\n
     {current_node.state[2]}\n""")
@@ -122,25 +126,61 @@ def solve_puzzle(start, goal):
         {current_node.state[0]}\n
         {current_node.state[1]}\n
         {current_node.state[2]}\n""") 
-        print(current_node.hscore)
+        print(f"H Value: {current_node.hscore}")
         expanded += 1
         zero_loc = find_tile(current_node.state, 0)
         #North
-        if current_node.state[zero_loc[0] - 1][zero_loc[1]]:
-            new_state = current_node.state
-            new_state[zero_loc[0]][zero_loc[1]] = new_state[zero_loc[0] - 1][zero_loc[1]]
-            new_state[zero_loc[0] - 1][zero_loc[1]] = 0
+        if zero_loc[0] - 1 != -1:
+            # new_North_state = current_node.state
+            new_North_state = copy.deepcopy(current_node.state)
+            new_North_state[zero_loc[0]][zero_loc[1]] = new_North_state[zero_loc[0] - 1][zero_loc[1]] #WHAT IS GOING ON WITH POINTERS HERE
+            new_North_state[zero_loc[0] - 1][zero_loc[1]] = 0
             
-            new_node = Node(new_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_state, goal), "N")
+            new_North_node = Node(new_North_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_North_state, goal), "N")
             
-            if new_node.hscore == 0:
-                print_solution(current_node, goal)
+            if new_North_node.hscore == 0:
+                print_solution(new_North_node, goal)
                 return
 
-            add_to_frontier(new_node, frontier)
+            add_to_frontier(new_North_node, frontier)
         #South
+        if zero_loc[0] + 1 != 3:
+            new_South_state = copy.deepcopy(current_node.state)
+            new_South_state[zero_loc[0]][zero_loc[1]] = new_South_state[zero_loc[0] + 1][zero_loc[1]]
+            new_South_state[zero_loc[0] + 1][zero_loc[1]] = 0
+            
+            new_South_node = Node(new_South_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_South_state, goal), "S")
+            
+            if new_South_node.hscore == 0:
+                print_solution(new_South_node, goal)
+                return
 
+            add_to_frontier(new_South_node, frontier)
         #East
+        if zero_loc[1] + 1 != 3:
+            new_East_state = copy.deepcopy(current_node.state)
+            new_East_state[zero_loc[0]][zero_loc[1]] = new_East_state[zero_loc[0]][zero_loc[1] + 1]
+            new_East_state[zero_loc[0]][zero_loc[1] + 1] = 0
+            
+            new_East_node = Node(new_East_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_East_state, goal), "E")
+            
+            if new_East_node.hscore == 0:
+                print_solution(new_East_node, goal)
+                return
+
+            add_to_frontier(new_East_node, frontier)
         #West
+        if zero_loc[1] - 1 != -1:
+            new_West_state = copy.deepcopy(current_node.state)
+            new_West_state[zero_loc[0]][zero_loc[1]] = new_West_state[zero_loc[0]][zero_loc[1] - 1]
+            new_West_state[zero_loc[0]][zero_loc[1] - 1] = 0
+            
+            new_West_node = Node(new_West_state, current_node, current_node.gscore + 1, calculate_manhattan_hscore(new_West_state, goal), "W")
+            
+            if new_West_node.hscore == 0:
+                print_solution(new_West_node, goal)
+                return
+
+            add_to_frontier(new_West_node, frontier)
     
-solve_puzzle(start2, goal)
+solve_puzzle(start, goal)
