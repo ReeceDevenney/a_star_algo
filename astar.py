@@ -132,6 +132,7 @@ def solve_puzzle(start, goal, h_function):
     frontier = []
     #counter for how many nodes were expanded
     expanded = 0
+    generatedNodes = 1
     frontier.append(Node(start, None, 0, h_function(start, goal), None))
     if frontier[0].hscore == 0:
                 print_solution(frontier[0], goal)
@@ -145,6 +146,7 @@ def solve_puzzle(start, goal, h_function):
         if i == 99999:
             print("no solution found")
             return 0
+
         current_node = frontier.pop(0)
         print(f"""\n
         {current_node.state[0]}\n
@@ -155,6 +157,10 @@ def solve_puzzle(start, goal, h_function):
         zero_loc = find_tile(current_node.state, 0)
         #Logic to see if 0 can be moved north
         if zero_loc[0] - 1 != -1:
+
+            #Adding 1 to the total node count!
+            generatedNodes += 1
+
             new_North_state = copy.deepcopy(current_node.state)
             new_North_state[zero_loc[0]][zero_loc[1]] = new_North_state[zero_loc[0] - 1][zero_loc[1]] #WHAT IS GOING ON WITH POINTERS HERE
             new_North_state[zero_loc[0] - 1][zero_loc[1]] = 0
@@ -164,13 +170,16 @@ def solve_puzzle(start, goal, h_function):
             if new_North_node.hscore == 0:
                 print_solution(new_North_node, goal)
                 print(f"expanded: {expanded}")
-                print(f"total nodes: {expanded + len(frontier)}")
+                print(f"total nodes: {generatedNodes}")
                 print(solution_path(new_North_node))
                 return
 
             add_to_frontier(new_North_node, frontier)
         #Logic to see if 0 can be moved south
         if zero_loc[0] + 1 != 3:
+
+            generatedNodes += 1
+
             new_South_state = copy.deepcopy(current_node.state)
             new_South_state[zero_loc[0]][zero_loc[1]] = new_South_state[zero_loc[0] + 1][zero_loc[1]]
             new_South_state[zero_loc[0] + 1][zero_loc[1]] = 0
@@ -180,13 +189,16 @@ def solve_puzzle(start, goal, h_function):
             if new_South_node.hscore == 0:
                 print_solution(new_South_node, goal)
                 print(f"expanded: {expanded}")
-                print(f"total nodes: {expanded + len(frontier)}")
+                print(f"total nodes: {generatedNodes}")
                 print(solution_path(new_South_node))
                 return
 
             add_to_frontier(new_South_node, frontier)
         #Logic to see if 0 can be moved east
         if zero_loc[1] + 1 != 3:
+
+            generatedNodes += 1
+
             new_East_state = copy.deepcopy(current_node.state)
             new_East_state[zero_loc[0]][zero_loc[1]] = new_East_state[zero_loc[0]][zero_loc[1] + 1]
             new_East_state[zero_loc[0]][zero_loc[1] + 1] = 0
@@ -196,13 +208,16 @@ def solve_puzzle(start, goal, h_function):
             if new_East_node.hscore == 0:
                 print_solution(new_East_node, goal)
                 print(f"expanded: {expanded}")
-                print(f"total nodes: {expanded + len(frontier)}")
+                print(f"total nodes: {generatedNodes}")
                 print(solution_path(new_East_node))
                 return
 
             add_to_frontier(new_East_node, frontier)
         #Logic to see if 0 can be moved west
         if zero_loc[1] - 1 != -1:
+
+            generatedNodes += 1
+
             new_West_state = copy.deepcopy(current_node.state)
             new_West_state[zero_loc[0]][zero_loc[1]] = new_West_state[zero_loc[0]][zero_loc[1] - 1]
             new_West_state[zero_loc[0]][zero_loc[1] - 1] = 0
@@ -212,17 +227,20 @@ def solve_puzzle(start, goal, h_function):
             if new_West_node.hscore == 0:
                 print_solution(new_West_node, goal)
                 print(f"expanded: {expanded}")
-                print(f"total nodes: {expanded + len(frontier)}")
+                print(f"total nodes: {generatedNodes}")
                 print(solution_path(new_West_node))
                 return
 
             add_to_frontier(new_West_node, frontier)
-start =[[1,2,3], 
-        [4,5,6], 
-        [8,7,0]]
+start = [[2,0,3],
+         [1,8,4],
+         [7,6,5]]
 
-goal = [[1,2,3], 
-        [4,5,6], 
-        [7,8,0]]
 
-solve_puzzle(start, goal, calculate_manhattan_hscore)
+goal = [[1, 2, 3],
+        [8, 0, 4],
+        [7, 6, 5]]
+
+
+solve_puzzle(start, goal, calculate_wrong_tiles_hscore)
+
