@@ -101,6 +101,8 @@ def add_to_frontier(node, frontier):
 
 # walk back up the tree to construct the work path
 def solution_path(node):
+    if node.move == None:
+        return ""
     solution = f"{node.move}"
     next_node = copy.deepcopy(node.parent)
     while True:
@@ -123,14 +125,21 @@ def print_solution(current_node, goal):
         {goal[2]}\n""")
     print("solution found")
 
-def solve_puzzle(h_function):
-    start = get_array(0)
-    goal = get_array(1)
+def solve_puzzle(start, goal, h_function):
+    #start = get_array(0)
+    #goal = get_array(1)
     #frontier to store all created nodes
     frontier = []
     #counter for how many nodes were expanded
     expanded = 0
     frontier.append(Node(start, None, 0, h_function(start, goal), None))
+    if frontier[0].hscore == 0:
+                print_solution(frontier[0], goal)
+                print(f"expanded: {expanded}")
+                print(f"total nodes: {expanded + len(frontier)}")
+                print(solution_path(frontier[0]))
+                return
+
     
     for i in range(100):
         current_node = frontier.pop(0)
@@ -205,5 +214,12 @@ def solve_puzzle(h_function):
                 return
 
             add_to_frontier(new_West_node, frontier)
-    
-solve_puzzle(calculate_wrong_tiles_hscore)
+start =[[1,2,3], 
+        [4,5,6], 
+        [7,8,0]]
+
+goal = [[1,2,3], 
+        [4,5,6], 
+        [7,8,0]]
+
+solve_puzzle(start, goal, calculate_wrong_tiles_hscore)
